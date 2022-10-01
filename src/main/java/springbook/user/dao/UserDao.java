@@ -75,20 +75,8 @@ public class UserDao {
         } catch(SQLException e){
             throw e;
         }finally {
-            if(ps != null){
-                try{
-                    ps.close();
-                } catch (SQLException e){
-
-                }
-            }
-            if(c != null){
-                try{
-                    c.close();
-                } catch (SQLException e){
-
-                }
-            }
+            if(ps != null){ try{ ps.close(); } catch (SQLException e){} }
+            if(c != null){ try{ c.close(); } catch (SQLException e){} }
         }
     }
 
@@ -108,27 +96,9 @@ public class UserDao {
         } catch (SQLException e){
             throw e;
         } finally {
-            if(rs != null){
-                try {
-                    rs.close();
-                } catch (SQLException e){
-
-                }
-            }
-            if(ps!= null) {
-                try{
-                    ps.close();
-                }catch (SQLException e){
-
-                }
-            }
-            if(c!= null){
-                try{
-                    c.close();
-                } catch (SQLException e){
-
-                }
-            }
+            if(rs != null){ try { rs.close(); } catch (SQLException e){} }
+            if(ps!= null) { try{ ps.close(); }catch (SQLException e){} }
+            if(c!= null){ try{ c.close(); } catch (SQLException e){} }
         }
     }
 
