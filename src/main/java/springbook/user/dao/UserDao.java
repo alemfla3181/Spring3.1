@@ -8,10 +8,15 @@ import javax.sql.DataSource;
 import java.sql.*;
 
 public class UserDao {
-
+    private Connection c;
+    private User user;
     private DataSource dataSource;
-
     private ConnectionMaker connectionMaker;
+    private JdbcContext jdbcContext;
+
+    public void setJdbcContext(JdbcContext jdbcContext) {
+        this.jdbcContext = jdbcContext;
+    }
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -20,9 +25,6 @@ public class UserDao {
     public void setConnectionMaker(ConnectionMaker connectionMaker) {
         this.connectionMaker = connectionMaker;
     }
-
-    private Connection c;
-    private User user;
 
     public void add(final User user) throws SQLException {
 
