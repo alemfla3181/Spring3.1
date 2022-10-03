@@ -28,7 +28,7 @@ public class UserDao {
         }
     };
 
-    public void add(final User user) {
+    public void add(final User user) throws DuplicateUserIdException {
         this.jdbcTemplate.update("insert into users(id, name, password) values (?,?,?)",
             user.getId(), user.getName(), user.getPassword());
     }
@@ -47,6 +47,12 @@ public class UserDao {
 
     public List<User> getAll(){
         return this.jdbcTemplate.query("select * from users order by id", this.userMapper);
+    }
+
+    public class DuplicateUserIdException extends RuntimeException {
+        public DuplicateUserIdException(Throwable cause){
+            super(cause);
+        }
     }
 
 }
