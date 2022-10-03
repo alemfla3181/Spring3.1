@@ -19,8 +19,6 @@ public class UserDao {
 
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-
-        this.dataSource = dataSource;
     }
 
     public void setConnectionMaker(ConnectionMaker connectionMaker) {
@@ -33,16 +31,11 @@ public class UserDao {
     }
 
     public User get(String id) {
-       return this.jdbcTemplate.queryForObject("select * from users where id = ?", new Object[]{id}, new RowMapper<User>() {
-           @Override
-           public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-               User user = new User();
-               user.setId(rs.getString("id"));
-               user.setName(rs.getString("name"));
-               user.setPassword(rs.getString("password"));
-               return user;
-           }
-       });
+       return this.jdbcTemplate.queryForObject("select * from users where id = ?", new Object[]{id}, this.userMapper);
+    }
+
+    public List<User> getAll(){
+        return this.jdbcTemplate.query("select * from users order by id", this.userMapper);
     }
 
     public void deleteAll() {
@@ -53,17 +46,16 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
     }
 
-    public List<User> getAll(){
-        return this.jdbcTemplate.query("select * from users order by id", new RowMapper<User>(){
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException{
-                User user = new User();
-                user.setId(rs.getString("id"));
-                user.setName(rs.getString("name"));
-                user.setPassword(rs.getString("password"));
-                return user;
-            }
-        });
-    }
+    private RowMapper<User> userMapper = new RowMapper<User>() {
+        @Override
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+            User user = new User();
+            user.setId(rs.getString("id"));
+            user.setName(rs.getString("name"));
+            user.setPassword(rs.getString("password"));
+            return user;
+        }
+    };
 
     public class SimpleConnectionMaker {
         public Connection makeNewConnection() throws SQLException, ClassNotFoundException {
