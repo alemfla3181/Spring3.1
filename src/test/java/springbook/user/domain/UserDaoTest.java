@@ -15,6 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.user.dao.UserDao;
+import springbook.user.dao.UserDaoJdbc;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -27,7 +28,7 @@ import static org.junit.Assert.assertThat;
 @ContextConfiguration(locations = "/test-applicationContext.xml")
 @DirtiesContext
 public class UserDaoTest {
-    UserDao dao;
+    UserDaoJdbc dao;
     private User user1;
     private User user2;
     private User user3;
@@ -39,12 +40,12 @@ public class UserDaoTest {
     public void setUp(){
         System.out.println(this.context);
         System.out.println(this);
-        this.dao = this.context.getBean("userDao", UserDao.class);
+        this.dao = this.context.getBean("userDao", UserDaoJdbc.class);
         this.user1 = new User("gyumee", "박성철", "springno1");
         this.user2 = new User("leegw700", "이길원", "springno2");
         this.user3 = new User("bumjin", "박범진", "springno3");
 
-        dao = new UserDao();
+        dao = new UserDaoJdbc();
         DataSource dataSource = new SingleConnectionDataSource(
                 "jdbc:mysql://localhost/study", "dragon", "1234", true);
         dao.setDataSource(dataSource);
