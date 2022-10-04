@@ -2,19 +2,14 @@ package springbook.user.domain;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import springbook.user.dao.UserDao;
 import springbook.user.dao.UserDaoJdbc;
 
 import javax.sql.DataSource;
@@ -122,6 +117,7 @@ public class UserDaoTest {
         dao.deleteAll();
 
         dao.add(user1);
+        dao.add(user2);
 
         user1.setName("오민규");
         user1.setPassword("springno6");
@@ -132,7 +128,8 @@ public class UserDaoTest {
 
         User user1update = dao.get(user1.getId());
         checkSameUser(user1, user1update);
-
+        User user2same = dao.get(user2.getId());
+        checkSameUser(user2, user2same);
     }
 
     private void checkSameUser(User user1, User user2){
