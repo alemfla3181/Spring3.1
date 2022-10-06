@@ -11,7 +11,7 @@ import springbook.user.domain.User;
 import java.sql.SQLException;
 
 public class UserDaoTest {
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+    public static void main(String[] args) {
         ApplicationContext
                 context = new GenericXmlApplicationContext("applicationContext.xml");
 
@@ -21,6 +21,7 @@ public class UserDaoTest {
         user.setId("user");
         user.setName("용가리");
         user.setPassword("1234");
+        user.setEmail("dragon@naver.com");
 
         dao.add(user);
 
@@ -30,8 +31,10 @@ public class UserDaoTest {
 
         if(!user.getName().equals(user2.getName())) {
             System.out.println("테스트 실패 (name)");
-        }else if(!user.getPassword().equals(user2.getPassword())){
+        }else if(!user.getPassword().equals(user2.getPassword())) {
             System.out.println("테스트 실패 (password)");
+        }else if(!user.getEmail().equals(user2.getEmail())){
+            System.out.println("테스트 실패 (email)");
         }else {
             System.out.println("조회 테스트 성공");
         }
