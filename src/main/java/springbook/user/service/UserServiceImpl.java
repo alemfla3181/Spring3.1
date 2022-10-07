@@ -22,12 +22,20 @@ public class UserServiceImpl implements UserService{
     public void setMailSender(MailSender mailSender) { this.mailSender = mailSender; }
 
     public void upgradeLevels(){
+        // 업그레이드 후보 사용자 목록을 가져온다.
         List<User> users = userDao.getAll();
         for(User user : users){
             if(canUpgradeLevel(user)){
                 upgradeLevel(user);
             }
         }
+    }
+
+    protected void upgradeLevel(User user) {
+        user.upgradeLevel();
+        // 수정된 사용자 정보를 DB에 반영한다.
+        userDao.update(user);
+        sendUpgradeEMail(user);
     }
 
     private void upgradeLevelsInternal() {
@@ -37,12 +45,6 @@ public class UserServiceImpl implements UserService{
                 upgradeLevel(user);
             }
         }
-    }
-
-    public void upgradeLevel(User user) {
-        user.upgradeLevel();
-        userDao.update(user);
-        sendUpgradeEMail(user);
     }
 
     private void sendUpgradeEMail(User user) {
