@@ -2,6 +2,7 @@ package springbook.learningtest.template;
 
 import org.junit.Before;
 import org.junit.Test;
+import springbook.learningtest.dao.Calculator;
 
 import java.io.IOException;
 
