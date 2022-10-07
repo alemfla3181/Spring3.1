@@ -4,6 +4,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import springbook.learningtest.dao.Hello;
+import springbook.learningtest.dao.HelloTarget;
+import springbook.learningtest.dao.HelloUppercase;
 
 import java.lang.reflect.Method;
 
@@ -29,5 +32,18 @@ public class ReflectionTest {
 
         Method charAtMethod = String.class.getMethod("charAt", int.class);
         assertThat((Character)charAtMethod.invoke(name, 0)).isEqualTo('S');
+    }
+
+    @Test
+    public void simpleProxy(){
+        Hello hello = new HelloTarget();
+        assertThat(hello.sayHello("Toby")).isEqualTo("Hello Toby");
+        assertThat(hello.sayHi("Toby")).isEqualTo("Hi Toby");
+        assertThat(hello.sayThankYou("Toby")).isEqualTo("Thank You Toby");
+
+        Hello proxiedHello = new HelloUppercase(new HelloTarget());
+        assertThat(proxiedHello.sayHello("Toby")).isEqualTo("HELLO TOBY");
+        assertThat(proxiedHello.sayHi("Toby")).isEqualTo("HI TOBY");
+        assertThat(proxiedHello.sayThankYou("Toby")).isEqualTo("THANK YOU TOBY");
     }
 }
