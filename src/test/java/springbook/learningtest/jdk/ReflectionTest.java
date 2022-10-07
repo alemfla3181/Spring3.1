@@ -7,8 +7,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.lang.reflect.Method;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
@@ -20,15 +19,15 @@ public class ReflectionTest {
         String name = "Spring";
 
         // length()
-        assertThat(name.length(), is(6));
+        assertThat(name.length()).isEqualTo(6);
 
         Method lengthMethod = String.class.getMethod("length");
-        assertThat((Integer)lengthMethod.invoke(name), is(6));
+        assertThat((Integer)lengthMethod.invoke(name)).isEqualTo(6);
 
         // charAt()
-        assertThat(name.charAt(0), is('S'));
+        assertThat(name.charAt(0)).isEqualTo('S');
 
         Method charAtMethod = String.class.getMethod("charAt", int.class);
-        assertThat((Character)charAtMethod.invoke(name, 0), is('S'));
+        assertThat((Character)charAtMethod.invoke(name, 0)).isEqualTo('S');
     }
 }
