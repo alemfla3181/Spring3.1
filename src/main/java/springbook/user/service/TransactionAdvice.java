@@ -9,7 +9,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 public class TransactionAdvice implements MethodInterceptor {
     PlatformTransactionManager transactionManager;
 
-    public void setTransactionManager(PlatformTransactionManager 트transactionManager) {
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
     }
 
