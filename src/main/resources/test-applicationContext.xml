@@ -11,9 +11,14 @@
         <property name="password" value="1234" />
     </bean>
 
-    <bean id="userService" class="springbook.user.service.UserServiceTx">
+    <bean id="userService" class="springbook.user.service.TxProxyFactoryBean">
+        <!-- target, trasactionManager 다른 빈을 가리키므로 ref 애트리뷰트 사용 -->
+        <property name="target" ref="userServiceImpl" />
         <property name="transactionManager" ref="transactionManager" />
-        <property name="userService" ref="userServiceImpl" />
+        <!-- pattern은 스트링으로 된 문자열이니 value 사용해 값을 지정 -->
+        <property name="pattern" value="upgradeLevels" />
+        <!-- serviceInterface가 Class타입이므로 value를 이용해 클래스 또는 인터페이스 이름을 지정, 스프링이 자동으로 class 오브젝트로 변환 해줌 -->
+        <property name="serviceInterface" value="springbook.user.service.UserService" />
     </bean>
 
     <bean id="userServiceImpl" class="springbook.user.service.UserServiceImpl">
