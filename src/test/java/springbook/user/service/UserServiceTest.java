@@ -11,10 +11,12 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
+import springbook.learningtest.dao.TransactionHandler;
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -156,9 +158,13 @@ public class UserServiceTest {
         testUserService.setUserDao(userDao);
         testUserService.setMailSender(mailSender);
 
-        UserServiceTx txUserService = new UserServiceTx();
-        txUserService.setTransactionManager(transactionManager);
-        txUserService.setUserService(testUserService);
+        TransactionHandler txhandler = new TransactionHandler();
+        txhandler.setTarget(testUserService);
+        txhandler.setTransactionManager(transactionManager);
+        txhandler.setPattern("upgradeLevels");
+        UserService txUserService = (UserService) Proxy.newProxyInstance(
+            getClass().getClassLoader(), new Class[]{ UserService.class }, txhandler
+        );
 
         userDao.deleteAll();
         for(User user : users) userDao.add(user);
