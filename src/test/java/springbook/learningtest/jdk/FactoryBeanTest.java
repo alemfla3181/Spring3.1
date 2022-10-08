@@ -20,6 +20,7 @@ public class FactoryBeanTest {
     @Test
     public void getMessageFromFactoryBean(){
         Object message = context.getBean("message");
+        // 타입 확인
         assertThat(message).isInstanceOf(Message.class);
         assertThat(((Message)message).getText()).isEqualTo("Factory Bean");
     }
