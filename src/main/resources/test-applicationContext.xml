@@ -11,16 +11,6 @@
         <property name="password" value="1234" />
     </bean>
 
-    <bean id="userService" class="springbook.user.service.TxProxyFactoryBean">
-        <!-- target, trasactionManager 다른 빈을 가리키므로 ref 애트리뷰트 사용 -->
-        <property name="target" ref="userServiceImpl" />
-        <property name="transactionManager" ref="transactionManager" />
-        <!-- pattern은 스트링으로 된 문자열이니 value 사용해 값을 지정 -->
-        <property name="pattern" value="upgradeLevels" />
-        <!-- serviceInterface가 Class타입이므로 value를 이용해 클래스 또는 인터페이스 이름을 지정, 스프링이 자동으로 class 오브젝트로 변환 해줌 -->
-        <property name="serviceInterface" value="springbook.user.service.UserService" />
-    </bean>
-
     <bean id="userServiceImpl" class="springbook.user.service.UserServiceImpl">
         <property name="userDao" ref="userDao"/>
         <property name="mailSender" ref="mailSender"/>
@@ -35,6 +25,32 @@
 
     <bean id="userDao" class="springbook.user.dao.UserDaoJdbc">
         <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="message" class="springbook.learningtest.spring.factorybean.MessageFactoryBean">
+        <property name="text" value="Factory Bean" />
+    </bean>
+
+    <bean id="transactionAdvice" class="springbook.user.service.TransactionAdvice">
+        <property name="transactionManager" ref="transactionManager" />
+    </bean>
+
+    <bean id="trasactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+        <property name="mappedName" value="upgrade*" />
+    </bean>
+
+    <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+        <property name="advice" ref="transactionAdvice" />
+        <property name="pointcut" ref="trasactionPointcut" />
+    </bean>
+
+    <bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="userServiceImpl" />
+        <property name="interceptorNames">
+            <list>
+                <value>transactionAdvisor</value>
+            </list>
+        </property>
     </bean>
 
 </beans>
