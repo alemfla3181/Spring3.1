@@ -4,6 +4,8 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.aop.ClassFilter;
+import org.springframework.aop.Pointcut;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.NameMatchMethodPointcut;
@@ -77,6 +79,55 @@ public class DynamicProxyTest {
             return ret.toUpperCase();
         }
     }
+
+    @Test
+    public void classNamePointcutAdvisor(){
+        // 포인트컷 준비
+        NameMatchMethodPointcut classMethodPointcut = new NameMatchMethodPointcut(){
+            @Override
+            public ClassFilter getClassFilter() {
+                return new ClassFilter() {
+                    @Override
+                    public boolean matches(Class<?> clazz) {
+                        return clazz.getSimpleName().startsWith("HelloT");
+                    }
+                };
+            }
+        };
+        classMethodPointcut.setMappedName("sayH*");
+
+        // 테스트
+        checkAdviced(new HelloTarget(), classMethodPointcut, true);
+
+        class HelloWorld extends HelloTarget {};
+        checkAdviced(new HelloWorld(), classMethodPointcut, false);
+
+        class HelloToby extends HelloTarget {};
+        checkAdviced(new HelloToby(), classMethodPointcut, true);
+
+    }
+
+    private void checkAdviced(Object target, Pointcut pointcut, boolean adviced) {
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(target);
+        pfBean.addAdvisor(new DefaultPointcutAdvisor(pointcut, new UppercaseAdvice()));
+        Hello proxiedHello = (Hello) pfBean.getObject();
+
+        if(adviced){
+            // 메소드 선정 방식을 통해 어드바이스 적용
+            assertThat(proxiedHello.sayHello("Toby")).isEqualTo("HELLO TOBY");
+            assertThat(proxiedHello.sayHi("Toby")).isEqualTo("HI TOBY");
+            assertThat(proxiedHello.sayThankYou("Toby")).isEqualTo("Thank You Toby");
+        }else{
+            // 어드바이스 적용 대상 후보에서 아예 탈락
+            assertThat(proxiedHello.sayHello("Toby")).isEqualTo("Hello Toby");
+            assertThat(proxiedHello.sayHi("Toby")).isEqualTo("Hi Toby");
+            assertThat(proxiedHello.sayThankYou("Toby")).isEqualTo("Thank You Toby");
+        }
+
+    }
+
+
 //
 //    static interface Hello {
 //        String sayHello(String name);
