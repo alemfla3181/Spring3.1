@@ -170,7 +170,7 @@ public class UserServiceTest {
 
     @Test
     public void advisorAutoProxyCreator(){
-
+        assertThat(testUserService).isInstanceOf(java.lang.reflect.Proxy.class);
     }
 
     static class TestUserServiceImpl extends UserServiceImpl{
