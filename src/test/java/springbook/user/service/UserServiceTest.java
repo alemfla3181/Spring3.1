@@ -4,13 +4,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -35,7 +33,9 @@ public class UserServiceTest {
     @Autowired
     PlatformTransactionManager transactionManager;
     @Autowired
-    UserServiceImpl userServiceImpl;
+    UserService userService;
+    @Autowired
+    UserService testUserService;
     @Autowired
     ApplicationContext context;
     @Autowired
@@ -139,8 +139,8 @@ public class UserServiceTest {
         User userWithoutLevel = users.get(0);
         userWithoutLevel.setLevel(null);
 
-        userServiceImpl.add(userWithLevel);
-        userServiceImpl.add(userWithoutLevel);
+        userService.add(userWithLevel);
+        userService.add(userWithoutLevel);
 
         // DB에 저장된 결과를 가져와 확인
         User userWithLevelRead = userDao.get(userWithLevel.getId());
@@ -152,22 +152,15 @@ public class UserServiceTest {
 
     @Test
     // 다이내믹 프록시 팩토리 빈을 직접 만들어 사용할 때는 없앴다가 다시 등장한 컨텍스트 무효화 어노테이션
-    @DirtiesContext
-    public void UpgradeAllOrNothing() throws Exception {
-        TestUserService testUserService = new TestUserService(users.get(3).getId());
-        testUserService.setUserDao(userDao);
-        testUserService.setMailSender(mailSender);
-
-        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
-        txProxyFactoryBean.setTarget(testUserService);
-        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
-
+    // @DirtiesContext 스프링 컨텍스트의 빈 설정을 변경하지 않으므로 제거됨
+    // 모든 테스트를 위한 DI 작업은 설정파일을 통해 서버에서 진행되므로 테스트 코드 자체는 단순해짐
+    public void UpgradeAllOrNothing(){
         userDao.deleteAll();
         for(User user : users) userDao.add(user);
 
         try{
             // 트랜잭션 기능을 분리한 오브젝트를 통해 예외 발생용 TestUserService가 호출되게 해야 한다.
-            txUserService.upgradeLevels();
+            this.testUserService.upgradeLevels();
             fail("TestUserServiceException expected");
             // TestUserService가 던져주는 예외를 잡아서 계속 진행되도록 한다. 그 외의 예외라면 테스트 실패
         }catch (TestUserServiceException e){
@@ -176,14 +169,10 @@ public class UserServiceTest {
         checkLevelUpgraded(users.get(1), false);
     }
 
-    static class TestUserService extends UserServiceImpl{
-        private String id;
+    static class TestUserServiceImpl extends UserServiceImpl{
+        private String id = "madnite1";
 
-        private TestUserService(String id){
-            this.id = id;
-        }
-
-        public void upgradeLevel(User user){
+        protected void upgradeLevel(User user){
             if(user.getId().equals(this.id)) throw new TestUserServiceException();
             super.upgradeLevel(user);
         }
