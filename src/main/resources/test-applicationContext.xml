@@ -11,10 +11,15 @@
         <property name="password" value="1234" />
     </bean>
 
-    <bean id="userServiceImpl" class="springbook.user.service.UserServiceImpl">
+    <bean id="userService" class="springbook.user.service.UserServiceImpl">
         <property name="userDao" ref="userDao"/>
         <property name="mailSender" ref="mailSender"/>
     </bean>
+
+                <!-- 스태틱 멤버 클래스는 $로 지정한다. -->                <!-- 프로퍼티 정의를 포함해서 UserService빈의 설정을 상속받는다 -->
+    <bean id="testUserService" class="springbook.user.service.UserServiceTest$TestUserServiceImpl" parent="userService" />
+
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
 
     <bean id="transactionManager"
         class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -35,22 +40,14 @@
         <property name="transactionManager" ref="transactionManager" />
     </bean>
 
-    <bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
-        <property name="mappedName" value="upgrade*" />
+    <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+        <property name="advice" ref="transactionAdvice" />
+        <property name="pointcut" ref="transactionPointcut" />
     </bean>
 
-    <bean id="transactionAdvisor" class="springbook.learningtest.jdk.proxy.NameMatchClassMethodPointcut">
+    <bean id="transactionPointcut" class="springbook.learningtest.jdk.proxy.NameMatchClassMethodPointcut">
         <property name="mappedClassName" value="*ServiceImpl" />
         <property name="mappedName" value="upgrade*" />
-    </bean>
-
-    <bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="userServiceImpl" />
-        <property name="interceptorNames">
-            <list>
-                <value>transactionAdvisor</value>
-            </list>
-        </property>
     </bean>
 
 </beans>
