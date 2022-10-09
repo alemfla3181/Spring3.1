@@ -20,12 +20,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 import static springbook.user.service.UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER;
 import static springbook.user.service.UserServiceImpl.MIN_RECCOMEND_FOR_GOLD;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.fail;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/test-applicationContext.xml")
@@ -73,14 +72,14 @@ public class UserServiceTest {
         // MockUserDao로부터 업데이트 결과를 가져온다.
         List<User> updated = mockUserDao.getUpdated();
         // 업데이트 횟수와 정보를 확인한다.
-        assertThat(updated.size(), is(2));
+        assertThat(updated.size()).isEqualTo(2);
         checkUserAndLevel(updated.get(0), "joytouch", Level.SILVER);
         checkUserAndLevel(updated.get(1), "madnite1", Level.GOLD);
 
         List<String> request = mockMailSender.getRequests();
-        assertThat(request.size(), is(2));
-        assertThat(request.get(0), is(users.get(1).getEmail()));
-        assertThat(request.get(1), is(users.get(3).getEmail()));
+        assertThat(request.size()).isEqualTo(2);
+        assertThat(request.get(0)).isEqualTo(users.get(1).getEmail());
+        assertThat(request.get(1)).isEqualTo(users.get(3).getEmail());
     }
 
     @Test
@@ -101,31 +100,31 @@ public class UserServiceTest {
         verify(mockUserDao, times(2)).update(any(User.class));
         verify(mockUserDao, times(2)).update(any(User.class));
         verify(mockUserDao).update(users.get(1));
-        assertThat(users.get(1).getLevel(), is(Level.SILVER));
+        assertThat(users.get(1).getLevel()).isEqualTo(Level.SILVER);
         verify(mockUserDao).update(users.get(3));
-        assertThat(users.get(3).getLevel(), is(Level.GOLD));
+        assertThat(users.get(3).getLevel()).isEqualTo(Level.GOLD);
 
         ArgumentCaptor<SimpleMailMessage> mailMessageArg = ArgumentCaptor.forClass(SimpleMailMessage.class);
         // 파라미터를 정밀하게 검사하기 위해 캡처할 수도 있다.
         verify(mockMailSender, times(2)).send(mailMessageArg.capture());
         List<SimpleMailMessage> mailMessages = mailMessageArg.getAllValues();
-        assertThat(mailMessages.get(0).getTo()[0], is(users.get(1).getEmail()));
-        assertThat(mailMessages.get(1).getTo()[0], is(users.get(3).getEmail()));
+        assertThat(mailMessages.get(0).getTo()[0]).isEqualTo(users.get(1).getEmail());
+        assertThat(mailMessages.get(1).getTo()[0]).isEqualTo(users.get(3).getEmail());
     }
 
     private void checkUserAndLevel(User updated, String expectedId, Level expectedLevel) {
-        assertThat(updated.getId(), is(expectedId));
-        assertThat(updated.getLevel(), is(expectedLevel));
+        assertThat(updated.getId()).isEqualTo(expectedId);
+        assertThat(updated.getLevel()).isEqualTo(expectedLevel);
     }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
         User userUpdate = userDao.get(user.getId());
         if(upgraded){
             // 업그레이드가 일어났는지 확인
-            assertThat(userUpdate.getLevel(), is(user.getLevel().nextLevel()));
+            assertThat(userUpdate.getLevel()).isEqualTo(user.getLevel().nextLevel());
         }else{
             // 업그레이드가 일어나지 않았는지 확인
-            assertThat(userUpdate.getLevel(), is(user.getLevel()));
+            assertThat(userUpdate.getLevel()).isEqualTo(user.getLevel());
         }
     }
 
@@ -146,8 +145,8 @@ public class UserServiceTest {
         User userWithLevelRead = userDao.get(userWithLevel.getId());
         User userWithoutLevelRead = userDao.get(userWithoutLevel.getId());
 
-        assertThat(userWithLevelRead.getLevel(), is(userWithLevel.getLevel()));
-        assertThat(userWithoutLevelRead.getLevel(), is(Level.BASIC));
+        assertThat(userWithLevelRead.getLevel()).isEqualTo(userWithLevel.getLevel());
+        assertThat(userWithoutLevelRead.getLevel()).isEqualTo(Level.BASIC);
     }
 
     @Test
@@ -167,6 +166,11 @@ public class UserServiceTest {
         }
         // 예외가 발생하기 전에 레벨 변경이 있었던 사용자의 레벨이 처음 상태로 바뀌었나 확인
         checkLevelUpgraded(users.get(1), false);
+    }
+
+    @Test
+    public void advisorAutoProxyCreator(){
+
     }
 
     static class TestUserServiceImpl extends UserServiceImpl{
