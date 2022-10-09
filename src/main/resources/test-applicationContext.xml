@@ -46,7 +46,7 @@
     </bean>
 
     <bean id="transactionPointcut" class="springbook.learningtest.jdk.proxy.NameMatchClassMethodPointcut">
-        <property name="mappedClassName" value="*ServiceImpl" />
+        <property name="mappedClassName" value="*NotServiceImpl" />
         <property name="mappedName" value="upgrade*" />
     </bean>
 
