@@ -180,6 +180,13 @@ public class UserServiceTest {
             if(user.getId().equals(this.id)) throw new TestUserServiceException();
             super.upgradeLevel(user);
         }
+
+        public List<User> getAll(){
+            for(User user : super.getAll()){
+                super.update(user);
+            }
+            return null;
+        }
     }
 
     static class TestUserServiceException extends RuntimeException {
