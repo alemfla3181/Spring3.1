@@ -181,10 +181,14 @@ public class UserServiceTest {
             super.upgradeLevel(user);
         }
 
+//       읽기전용 트랜잭션의 대상인 get으로 시작하는 메소드를 오버라이드 한가
         public List<User> getAll(){
             for(User user : super.getAll()){
+                // 강제로 쓰기 시도를 한다. 여기서 읽기전용 속성으로 인한 예외가 발생해야 한다
                 super.update(user);
             }
+            // 메소드가 끝나기 전에 예외가 발생해야 하니 리턴 값은 별 의미 없다.
+            // 적당한 값을 넣어서 컴파일만 되게 한다.
             return null;
         }
     }
