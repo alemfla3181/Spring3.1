@@ -173,6 +173,11 @@ public class UserServiceTest {
         assertThat(testUserService).isInstanceOf(java.lang.reflect.Proxy.class);
     }
 
+    @Test
+    public void readOnlyTransactionAttribute(){
+        testUserService.getAll();
+    }
+
     static class TestUserServiceImpl extends UserServiceImpl{
         private String id = "madnite1";
 
