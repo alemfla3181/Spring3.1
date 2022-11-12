@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.TransientDataAccessException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -173,7 +174,7 @@ public class UserServiceTest {
         assertThat(testUserService).isInstanceOf(java.lang.reflect.Proxy.class);
     }
 
-    @Test
+    @Test(expected = TransientDataAccessException.class)
     public void readOnlyTransactionAttribute(){
         testUserService.getAll();
     }
