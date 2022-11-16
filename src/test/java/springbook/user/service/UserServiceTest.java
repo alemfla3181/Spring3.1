@@ -176,7 +176,9 @@ public class UserServiceTest {
 
     @Test(expected = TransientDataAccessException.class)
     public void readOnlyTransactionAttribute(){
+        // 트랜잭션 속성이 제대로 적용됐다면 여기서 읽기전용 속성을 위반했기 때문에 예외가 발생해야 한다.
         testUserService.getAll();
+
     }
 
     static class TestUserServiceImpl extends UserServiceImpl{
